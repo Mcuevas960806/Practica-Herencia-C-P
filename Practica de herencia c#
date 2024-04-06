@@ -1,0 +1,108 @@
+using System;
+using System.Collections.Generic;
+
+class Hamburguesa
+{
+    public string TipoPan { get; }
+    public string TipoCarne { get; }
+    public decimal PrecioBase { get; }
+    public List<string> IngredientesAdicionales { get; }
+    public decimal PrecioIngredientesAdicionales { get; private set; }
+
+    public Hamburguesa(string tipoPan, string tipoCarne, decimal precioBase)
+    {
+        TipoPan = tipoPan;
+        TipoCarne = tipoCarne;
+        PrecioBase = precioBase;
+        IngredientesAdicionales = new List<string>();
+        PrecioIngredientesAdicionales = 0;
+    }
+
+    public void AgregarIngrediente(string ingrediente, decimal precioAdicional)
+    {
+        if (IngredientesAdicionales.Count < 4) // Máximo 4 ingredientes adicionales
+        {
+            IngredientesAdicionales.Add(ingrediente);
+            PrecioIngredientesAdicionales += precioAdicional;
+        }
+        else
+        {
+            Console.WriteLine("No se pueden agregar más de 4 ingredientes adicionales.");
+        }
+    }
+
+    public virtual void MostrarPrecio()
+    {
+        Console.WriteLine("Detalles de la hamburguesa:");
+        Console.WriteLine($"Tipo de Pan: {TipoPan}");
+        Console.WriteLine($"Tipo de Carne: {TipoCarne}");
+        Console.WriteLine($"Precio Base: {PrecioBase}");
+        Console.WriteLine("Ingredientes adicionales:");
+        foreach (var ingrediente in IngredientesAdicionales)
+        {
+            Console.WriteLine($"- {ingrediente}");
+        }
+        Console.WriteLine($"Precio Ingredientes Adicionales: {PrecioIngredientesAdicionales}");
+        Console.WriteLine($"Precio Total: {PrecioBase + PrecioIngredientesAdicionales}");
+    }
+}
+
+class HamburguesaSaludable : Hamburguesa
+{
+    public HamburguesaSaludable(string tipoPan, string tipoCarne, decimal precioBase)
+        : base(tipoPan, tipoCarne, precioBase)
+    {
+    }
+
+    public override void MostrarPrecio()
+    {
+        Console.WriteLine("Detalles de la hamburguesa saludable:");
+        base.MostrarPrecio();
+    }
+}
+
+class HamburguesaPremium : Hamburguesa
+{
+    private decimal PrecioPapitas { get; }
+    private decimal PrecioBebida { get; }
+
+    public HamburguesaPremium(string tipoPan, string tipoCarne, decimal precioBase,
+                              decimal precioPapitas, decimal precioBebida)
+        : base(tipoPan, tipoCarne, precioBase)
+    {
+        PrecioPapitas = precioPapitas;
+        PrecioBebida = precioBebida;
+        AgregarExtras();
+    }
+
+    private void AgregarExtras()
+    {
+        AgregarIngrediente("Papitas", PrecioPapitas);
+        AgregarIngrediente("Bebida", PrecioBebida);
+    }
+
+    public override void MostrarPrecio()
+    {
+        Console.WriteLine("Detalles de la hamburguesa premium:");
+        base.MostrarPrecio();
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Hamburguesa hamburguesaClasica = new Hamburguesa("Pan Normal", "Carne Normal", 50);
+        hamburguesaClasica.AgregarIngrediente("Lechuga", 5);
+        hamburguesaClasica.AgregarIngrediente("Tomate", 5);
+        hamburguesaClasica.MostrarPrecio();
+
+        HamburguesaSaludable hamburguesaSaludable = new HamburguesaSaludable("Pan Integral", "Carne de Pollo", 60);
+        hamburguesaSaludable.AgregarIngrediente("Aguacate", 10);
+        hamburguesaSaludable.AgregarIngrediente("Pimiento", 8);
+        hamburguesaSaludable.MostrarPrecio();
+
+        HamburguesaPremium hamburguesaPremium = new HamburguesaPremium("Pan Normal", "Carne de Res Angus", 80, 20, 15);
+        hamburguesaPremium.MostrarPrecio();
+    }
+}
